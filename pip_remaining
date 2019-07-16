@@ -1,6 +1,9 @@
 -- Value remaining to be invested via personal investment plans
 -- Edge case: two pip plans with identical parameters, one begins after the other ends. 
 -- Edge case: customer sets up two pips with same frequency and amount, one on 7th and one on 21st 
+-- pip_invested = total amount already invesed, per pip, via a pip.
+-- pip_value = total value of a pip plan, both already invested and funds to be invested 
+-- pip_remaining = the total amount remaining to be invested per pip plan 
 
 WITH 
   pip_table_1
