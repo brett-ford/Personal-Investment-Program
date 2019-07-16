@@ -27,8 +27,8 @@ WITH
         completed_transactions * amount AS pip_invested,
         CASE 
           WHEN frequency = 1 THEN (datediff(mm, end, begin) + 1) * amount
-          WHEN frequency = 2 THEN ((datediff(mm, end, begin) + 1)/4) * amount
-          WHEN frequency = 3 THEN ((datediff(mm, end, begin) + 1)/2) * amount
+          WHEN frequency = 2 THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
+          WHEN frequency = 3 THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
         END AS pip_total
       FROM pip_table_1)
       
