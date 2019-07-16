@@ -1,0 +1,38 @@
+-- Value remaining to be invested via personal investment plans
+-- Edge case: two pip plans with identical parameters, one begins after the other ends. 
+-- Edge case: customer sets up two pips with same frequency and amount, one on 7th and one on 21st 
+
+WITH 
+  pip_table_1
+  AS (SELECT
+        p.account_number,
+        p.frequency, 
+        p.amount,
+        p.day,
+        p.begin, 
+        p.end, 
+        COUNT(rt.time_stamp) AS completed_transactions
+      FROM pip AS p
+      LEFT JOIN runtime AS rt ON p.account_number = rt.account_number
+      GROUP BY p.account_number, p.frequency, p.amount --assuming this is a compound primary key 
+      ),
+
+  dates 
+  AS (SELECT
+      CASE 
+        WHEN 
+      FROM runtime AS RT 
+
+
+  pip_table_2
+  AS (SELECT
+        *,
+        completed_transactions * amount AS pip_invested
+        CASE 
+          
+        AS pip_value
+      FROM pip_table_1 AS pt
+      
+    
+    
+    
