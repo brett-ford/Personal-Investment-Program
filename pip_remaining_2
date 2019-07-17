@@ -11,7 +11,7 @@ WITH pip_table_1
 AS (
   SELECT *
   FROM pip
-  WHERE datediff(dd, GETDATE(), begin) >= 0 and datediff(dd, end, GETDATE()) >= 0 
+  WHERE datediff(dd, begin, GETDATE()) >= 0 and datediff(dd, GETDATE(), end) >= 0 
   ),
   
 pip_table_2
@@ -22,30 +22,30 @@ AS (
     CASE 
       WHEN DATEPART(day, GETDATE()) < day
       THEN CASE 
-             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) - 1) * amount
-             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/3) + 1) * amount
-             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/6) + 1) * amount
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, begin, GETDATE()) - 1) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, begin, GETDATE()) - 1)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, begin, GETDATE()) - 1)/6) + 1) * amount
            END
            
       WHEN DATEPART(day, GETDATE()) >= day
       THEN CASE 
-             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 0) * amount
-             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/3) + 1) * amount
-             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/6) + 1) * amount
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, begin, GETDATE()) + 0) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, begin, GETDATE()) + 0)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, begin, GETDATE()) + 0)/6) + 1) * amount
            END
            
       WHEN DATEPART(day, begin) > day AND DATEPART(day, GETDATE()) > day
       THEN CASE 
-             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 1) * amount
-             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/3) + 1) * amount
-             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/6) + 1) * amount
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, begin, GETDATE()) + 1) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, begin, GETDATE()) + 1)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, begin, GETDATE()) + 1)/6) + 1) * amount
            END  
     END AS pip_invested,    
     
     CASE 
-      WHEN frequency = "monthly" THEN (datediff(mm, end, begin) + 1) * amount
-      WHEN frequency = "quarterly" THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
-      WHEN frequency = "semiannually" THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
+      WHEN frequency = "monthly" THEN (datediff(mm, begin, end) + 1) * amount
+      WHEN frequency = "quarterly" THEN (((datediff(mm, begin, end) + 1)/3) + 1) * amount
+      WHEN frequency = "semiannually" THEN (((datediff(mm, begin, end) + 1)/6) + 1) * amount
     END AS pip_total
   FROM pip_table_1
   )
