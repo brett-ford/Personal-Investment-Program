@@ -5,13 +5,49 @@
 -- pip_value = total value of a pip plan, both already invested and funds to be invested 
 -- pip_remaining = the total amount remaining to be invested per pip plan 
 
-today = getDate() -- or whatever the syntax is
+DATEPART(month, GETDATE())
 
+
+-- get to it 
 WITH pip_table_1
 AS (
   SELECT *
   FROM pip
-  WHERE datediff(dd, today, begin) >= 0
+  WHERE datediff(dd, GETDATE(), begin) >= 0 and datediff(dd, end, GETDATE()) >= 0 
+  ),
+  
+pip_table_2
+AS (
+  SELECT 
+    *,
+    CASE 
+      WHEN frequency = 1 
+      THEN (datediff(mm, end, begin) + 1) * amount
+      
+      WHEN frequency = 2 
+      THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
+      
+      WHEN frequency = 3 
+      THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
+    
+    END AS pip_invested,
+    
+    
+    CASE 
+      WHEN frequency = 1 THEN (datediff(mm, end, begin) + 1) * amount
+      WHEN frequency = 2 THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
+      WHEN frequency = 3 THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
+    END AS pip_total
+
+  FROM pip_table_1
+  GROUP BY p.account_number, p.frequency, p.amount --assuming these 3 comprise a compound primary key 
+
+-- round about way 
+WITH pip_table_1
+AS (
+  SELECT *
+  FROM pip
+  WHERE datediff(dd, GETDATE(), begin) >= 0 and datediff(dd, end, GETDATE()) >= 0 
   ),
   
 pip_table_2
@@ -24,9 +60,9 @@ AS (
       WHEN frequency = 3 THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
     END AS pip_total,
     CASE 
-      WHEN frequency = 1 THEN (datediff(mm, today, begin) + 1) * amount
-      WHEN frequency = 2 THEN (((datediff(mm, today, begin) + 1)/3) + 1) * amount
-      WHEN frequency = 3 THEN (((datediff(mm, today, begin) + 1)/6) + 1) * amount
+      WHEN frequency = 1 THEN (datediff(mm, GETDATE(), begin) + 1) * amount
+      WHEN frequency = 2 THEN (((datediff(mm, GETDATE(), begin) + 1)/3) + 1) * amount
+      WHEN frequency = 3 THEN (((datediff(mm, GETDATE(), begin) + 1)/6) + 1) * amount
     END AS pip_invested,
   FROM pip_table_1
   GROUP BY p.account_number, p.frequency, p.amount --assuming these 3 comprise a compound primary key 
