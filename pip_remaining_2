@@ -11,7 +11,7 @@ WITH pip_table_1
 AS (
   SELECT *
   FROM pip
-  WHERE datediff(dd, begin, GETDATE()) >= 0 and datediff(dd, GETDATE(), end) >= 0 
+  WHERE datediff(dd, begin, GETDATE()) >= 0 AND datediff(dd, GETDATE(), end) >= 0 
   ),
   
 pip_table_2
@@ -52,6 +52,7 @@ AS (
       WHEN frequency = "semiannually" 
       THEN (((datediff(mm, begin, end) + 1)/6) + 1) * amount
     END AS pip_total
+  
   FROM pip_table_1
   )
   
