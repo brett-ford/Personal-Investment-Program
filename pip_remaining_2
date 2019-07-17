@@ -1,14 +1,12 @@
 -- Value remaining to be invested via personal investment plans
--- Edge case: two pip plans with identical parameters, one begins after the other ends. 
--- Edge case: customer sets up two pips with same frequency and amount, one on 7th and one on 21st 
+
 -- pip_invested = total amount already invesed, per pip, via a pip.
 -- pip_value = total value of a pip plan, both already invested and funds to be invested 
 -- pip_remaining = the total amount remaining to be invested per pip plan 
 
-DATEPART(month, GETDATE())
+-- Edge case: customer sets up two pips with same frequency and amount, one on 7th and one on 21st 
 
 
--- get to it 
 WITH pip_table_1
 AS (
   SELECT *
@@ -20,62 +18,38 @@ pip_table_2
 AS (
   SELECT 
     *,
+    
     CASE 
       WHEN DATEPART(day, begin) < day AND DATEPART(day, GETDATE()) < day
       THEN CASE 
-            WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) - 1) * amount
-            WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/3) + 1) * amount
-            WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/6) + 1) * amount
-          END
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) - 1) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) - 1)/6) + 1) * amount
+           END
       WHEN (DATEPART(day, begin) < day AND DATEPART(day, GETDATE()) > day) OR (DATEPART(day, begin) > day AND DATEPART(day, GETDATE()) < day)
       THEN CASE 
-            WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 0) * amount
-            WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/3) + 1) * amount
-            WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/6) + 1) * amount
-          END
-      WHEN (DATEPART(day, begin) > day AND DATEPART(day, GETDATE()) > day)
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 0) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 0)/6) + 1) * amount
+           END
+      WHEN DATEPART(day, begin) > day AND DATEPART(day, GETDATE()) > day
       THEN CASE 
-            WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 1) * amount
-            WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/3) + 1) * amount
-            WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/6) + 1) * amount
-          END  
+             WHEN frequency = "monthly" THEN (DATEDIFF(mm, GETDATE(), begin) + 1) * amount
+             WHEN frequency = "quarterly" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/3) + 1) * amount
+             WHEN frequency = "semiannually" THEN (((DATEDIFF(mm, GETDATE(), begin) + 1)/6) + 1) * amount
+           END  
     END AS pip_invested,    
+    
     CASE 
-      WHEN frequency = 1 THEN (datediff(mm, end, begin) + 1) * amount
-      WHEN frequency = 2 THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
-      WHEN frequency = 3 THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
+      WHEN frequency = "monthly" THEN (datediff(mm, end, begin) + 1) * amount
+      WHEN frequency = "quarterly" THEN (((datediff(mm, end, begin) + 1)/3) + 1) * amount
+      WHEN frequency = "semiannually" THEN (((datediff(mm, end, begin) + 1)/6) + 1) * amount
     END AS pip_total
   FROM pip_table_1
-  GROUP BY p.account_number, p.frequency, p.amount --assuming these 3 comprise a compound primary key 
+  )
   
 SELECT 
   *,
   pip_total - pip_invested AS pip_remaining
 FROM pip_table_2
-
-
- 
-
-
-
-
-
-
-
-
-WITH 
-  pip_table_1
-  AS (SELECT
-        p.account_number,
-        p.frequency, 
-        p.amount,
-        p.day,
-        p.begin, 
-        p.end, 
-        COUNT(rt.time_stamp) AS completed_transactions
-      FROM pip AS p
-      LEFT JOIN runtime AS rt ON p.account_number = rt.account_number
-      ),
-
-
   
