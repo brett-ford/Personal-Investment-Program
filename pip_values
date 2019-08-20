@@ -1,6 +1,5 @@
 -- Value remaining to be invested via personal investment plans.
 -- Accurate after close of business on the 7th & 21st and at any time on any other day. 
--- Assumes that account_id, amount, and frequency form a compound primary key for the pip table. 
 -- Excludes pips that are set up but haven't had their first investment. 
 
 -- pip_invested = total amount already invested per pip 
