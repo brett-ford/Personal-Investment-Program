@@ -1,15 +1,11 @@
--- Value remaining to be invested via personal investment plans
--- accounts for the month in which the report is being run. 
--- does not account for the minute the report is being run. 
--- does not handle pips that are set up but haven't had their first investment. 
--- this will be accurate on the 7th and 21st, after close of business, and any time on any other day. 
--- assumes that account_id, amount, and frequency form a compound primary key for the pip table. 
+-- Value remaining to be invested via personal investment plans.
+-- Accurate after close of business on the 7th & 21st and at any time on any other day. 
+-- Assumes that account_id, amount, and frequency form a compound primary key for the pip table. 
+-- Excludes pips that are set up but haven't had their first investment. 
 
--- pip_invested = total amount already invesed per pip 
--- pip_value = total value of a pip plan, past and future investments 
+-- pip_invested = total amount already invested per pip 
+-- pip_total = total value of a pip plan, including past and future investments 
 -- pip_remaining = the total amount remaining to be invested per pip plan 
-
--- Edge case: customer sets up two pips with same frequency and amount, one on 7th and one on 21st 
 
 
 WITH pip_table_1
@@ -65,4 +61,8 @@ SELECT
   *,
   pip_total - pip_invested AS pip_remaining
 FROM pip_table_2
+ORDER BY pip_remaining DESC
+
+
+  
   
